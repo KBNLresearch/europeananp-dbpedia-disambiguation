@@ -1,0 +1,10 @@
+
+data/final.csv
+
+data/*.txt
+
+solr/**
+
+data/rawdata/**
+
+solrhome/dbpedia/data/**

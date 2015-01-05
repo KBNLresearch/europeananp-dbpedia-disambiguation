@@ -1,0 +1,1 @@
+curl "http://localhost:8983/solr/dbpedia/update/csv?header=false&fieldnames=id,label_en,schemaorgtype,abstract_en,redirectLabel,inlinks&encapsulator=\"&f.redirectLabel.split=true&f.redirectLabel.separator=|&f.schemaorgtype.split=true&f.schemaorgtype.separator=|&stream.file=../../data/final.csv&stream.contentType=text/csv;charset=utf-8"
