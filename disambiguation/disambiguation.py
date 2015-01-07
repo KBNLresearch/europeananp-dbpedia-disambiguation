@@ -38,11 +38,11 @@ def _lcs(a, b):
     return result
 
 def _escapeQueryString(toEscape):
-  replaceCharacter=["+","-","&&","||","!","(",")","{","}","[","]","^","\"","~","*","?",":","\\"]
+  replaceCharacter=["+","-","&&","||","!","(",")","{","}","[","]","^","\"","~","*","?",":"]
 
   cleaned=toEscape.rstrip().lstrip()
   for c in replaceCharacter:
-  	cleaned=cleaned.replace(c,"\\"+c)
+  	cleaned=cleaned.replace(c,'\\'+c)
   return cleaned
 
 #remove information in parenthesis, lowercase

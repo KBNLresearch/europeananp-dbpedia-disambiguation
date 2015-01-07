@@ -5,6 +5,8 @@ data/*.txt
 
 solr/**
 
+**/*.pyc
+
 data/rawdata/**
 
 solrhome/dbpedia/data/**
