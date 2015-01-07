@@ -65,7 +65,7 @@ def _stringSimilarity(a,b):
 
 def disambiguateList(entityStrings):
   result=dict()
-  for s in entityStrings:
+  for s in set(entityStrings):
       result[s]=linkEntity(s)
   return result
 
@@ -89,10 +89,12 @@ def linkEntity(namedEntityString):
   	return None
   jsonResult=json.loads(result)
   bestMatch=None
+  bestMatchMainLabel=None
   score=-1.0
   maxScore=jsonResult["response"]["maxScore"]
   sumScore=0.0
   sumLabels=dict()
+  mainLabels=dict()
   for d in jsonResult["response"]["docs"]:
 
   	if (d.get("score")/maxScore) > CUTOFF_RELEVANCY:
@@ -100,6 +102,7 @@ def linkEntity(namedEntityString):
   		labels=d.get("redirectLabel")
   		if labels is None:
   			labels=[]
+		mainLabels[d.get("id")]=d.get("label_en")		
   		sumLabels[d.get("id")]=[(_cleanedLabel(d.get("label_en")),d.get("score"))]
   		for l in labels:
   			sumLabels[d.get("id")].append((_cleanedLabel(l),d.get("score"))) 
@@ -112,11 +115,12 @@ def linkEntity(namedEntityString):
   	 		labelScore=similarityScore*math.sqrt(relativeRelevancyScore)
   	 		if labelScore>score:
   	 			bestMatch=d
+				bestMatchMainLabel=mainLabels[d]
   	 			score=labelScore
   if score > CUTOFF_TOTAL_SCORE:
-  	return bestMatch,score
+  	return bestMatch,score,bestMatchMainLabel
   else:
-  	return None, -1.0
+  	return None, -1.0, bestMatchMainLabel
 
 if __name__ == '__main__':
 	print linkEntity(sys.argv[1])
