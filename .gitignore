@@ -6,7 +6,7 @@ data/*.txt
 
 solr/**
 
-**/*.pyc
+.pyc
 
 data/rawdata/**
 

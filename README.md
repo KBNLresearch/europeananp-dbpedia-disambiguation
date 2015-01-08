@@ -21,7 +21,7 @@ to start up a local instance with the right configuration
 
 ## Processing dumps
 
-Download dumps from DBPedia (nt-format) from `http://wiki.dbpedia.org/Downloads2014` and put dem in `data/rawdata`
+Download dumps from DBPedia (nt-format) from `http://wiki.dbpedia.org/Downloads2014` and put them in `data/rawdata`
 
 
 For an English label database you need:
