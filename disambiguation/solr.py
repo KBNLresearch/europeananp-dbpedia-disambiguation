@@ -52,8 +52,7 @@ Only `url` is required,.
     ssl_key, ssl_cert -- If using client-side key files for
         SSL authentication,  these should be, respectively,
         your PEM key file and certificate file
-        
-    http_user, http_pass -- If given, include HTTP Basic authentication 
+    http_user, http_pass -- If given, include HTTP Basic authentication
         in all request headers.
 
 Once created, a connection object has the following public methods:
@@ -258,12 +257,15 @@ __version__ = "0.9.6"
 __all__ = ['SolrException', 'Solr', 'SolrConnection',
            'Response', 'SearchHandler']
 
-_python_version = sys.version_info[0]+(sys.version_info[1]/10.0)
+_python_version = sys.version_info[0] + (sys.version_info[1] / 10.0)
 
 # ===================================================================
 # Exceptions
 # ===================================================================
+
+
 class SolrException(Exception):
+
     """An exception thrown by solr connections.
 
     Detailed information is provided in attributes of the exception object.
@@ -289,7 +291,7 @@ class SolrException(Exception):
 
     def __repr__(self):
         return 'HTTP code=%s, Reason=%s, body=%s' % (
-                    self.httpcode, self.reason, self.body)
+            self.httpcode, self.reason, self.body)
 
     def __str__(self):
         return 'HTTP code=%s, reason=%s' % (self.httpcode, self.reason)
@@ -348,7 +350,6 @@ class Solr:
                  post_headers={},
                  max_retries=3,
                  debug=False):
-
         """
             url -- URI pointing to the Solr instance. Examples:
 
@@ -368,7 +369,7 @@ class Solr:
                 SSL authentication,  these should be, respectively,
                 your PEM key file and certificate file.
 
-            http_user, http_pass -- If given, include HTTP Basic authentication 
+            http_user, http_pass -- If given, include HTTP Basic authentication
                 in all request headers.
 
         """
@@ -376,7 +377,7 @@ class Solr:
         self.scheme, self.host, self.path = urlparse.urlparse(url, 'http')[:3]
         self.url = url
 
-        assert self.scheme in ('http','https')
+        assert self.scheme in ('http', 'https')
 
         self.persistent = persistent
         self.reconnects = 0
@@ -394,7 +395,9 @@ class Solr:
 
         if self.scheme == 'https':
             self.conn = httplib.HTTPSConnection(self.host,
-                   key_file=ssl_key, cert_file=ssl_cert, **kwargs)
+                                                key_file=ssl_key,
+                                                cert_file=ssl_cert,
+                                                **kwargs)
         else:
             self.conn = httplib.HTTPConnection(self.host, **kwargs)
 
@@ -419,14 +422,14 @@ class Solr:
 
         self.form_headers = {
             'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'}
-        
+
         if http_user is not None and http_pass is not None:
             http_auth = http_user + ':' + http_pass
             http_auth = 'Basic ' + http_auth.encode('base64').strip()
             self.auth_headers = {'Authorization': http_auth}
         else:
             self.auth_headers = {}
-        
+
         if not self.persistent:
             self.form_headers['Connection'] = 'close'
 
@@ -436,7 +439,6 @@ class Solr:
     def close(self):
         """Close the underlying HTTP(S) connection."""
         self.conn.close()
-
 
     # Update interface.
 
@@ -532,7 +534,7 @@ class Solr:
         return self._commit("optimize", wait_flush, wait_searcher)
 
     def _commit(self, verb, wait_flush, wait_searcher):
-        if not wait_searcher:  #just handle deviations from the default
+        if not wait_searcher:  # just handle deviations from the default
             if not wait_flush:
                 options = 'waitFlush="false" waitSearcher="false"'
             else:
@@ -577,7 +579,7 @@ class Solr:
 
             for value in values:
                 # ignore values that are not defined
-                if value == None:
+                if value is None:
                     continue
                 # Do some basic data conversion
                 if isinstance(value, datetime.datetime):
@@ -591,7 +593,7 @@ class Solr:
 
                 lst.append('<field name=%s>%s</field>' % (
                     (quoteattr(field),
-                    escape(unicode(value)))))
+                     escape(unicode(value)))))
         lst.append('</doc>')
 
     def _delete(self, id=None, ids=None, queries=None):
@@ -650,6 +652,7 @@ class Solr:
 
 
 class SolrConnection(Solr):
+
     """
     Represents a Solr connection.
 
@@ -759,7 +762,8 @@ class SearchHandler(object):
                 params['hl_fl'] = highlight
             else:
                 if not fields:
-                    raise ValueError("highlight is True and no fields were given")
+                    raise ValueError(
+                        "highlight is True and no fields were given")
                 elif isinstance(fields, basestring):
                     params['hl_fl'] = [fields]
                 else:
@@ -778,7 +782,7 @@ class SearchHandler(object):
             if not sort_order or sort_order not in ("asc", "desc"):
                 raise ValueError("sort_order must be 'asc' or 'desc'")
             if isinstance(sort, basestring):
-                sort = [ f.strip() for f in sort.split(",") ]
+                sort = [f.strip() for f in sort.split(",")]
             sorting = []
             for e in sort:
                 if not (e.endswith("asc") or e.endswith("desc")):
@@ -788,7 +792,7 @@ class SearchHandler(object):
             sort = ",".join(sorting)
             params['sort'] = sort
 
-        if score and not 'score' in fields.replace(',',' ').split():
+        if score and 'score' not in fields.replace(',', ' ').split():
             fields += ',score'
 
         params['fl'] = fields
@@ -839,7 +843,10 @@ def strify(s):
 # ===================================================================
 # Response objects
 # ===================================================================
+
+
 class Response(object):
+
     """
     A container class for a
 
@@ -850,6 +857,7 @@ class Response(object):
           results -- a list of matching documents. Each list item will
               be a dict.
     """
+
     def __init__(self, query):
         # These are set in ResponseContentHandler.endElement()
         self.header = {}
@@ -966,10 +974,12 @@ def parse_query_response(data, params, query):
 
 
 class ResponseContentHandler(ContentHandler):
+
     """
     ContentHandler for the XML results of a /select call.
     (Versions 2.2 (and possibly 2.1))
     """
+
     def __init__(self):
         self.stack = [Node(None, {})]
         self.in_tree = False
@@ -990,7 +1000,7 @@ class ResponseContentHandler(ContentHandler):
         # Keep track of children
         self.stack[-2].children.append(element)
 
-    def characters (self, ch):
+    def characters(self, ch):
         self.stack[-1].chars.append(ch)
 
     def endElement(self, name):
@@ -1015,9 +1025,9 @@ class ResponseContentHandler(ContentHandler):
             node.final = value.strip().lower().startswith('t')
 
         elif name == 'date':
-             node.final = utc_from_string(value.strip())
+            node.final = utc_from_string(value.strip())
 
-        elif name in ('float','double', 'status','QTime'):
+        elif name in ('float', 'double', 'status', 'QTime'):
             node.final = float(value.strip())
 
         elif name == 'response':
@@ -1031,15 +1041,18 @@ class ResponseContentHandler(ContentHandler):
                     for attr_name in child.attrs.getNames():
                         # We already know it is a response
                         if attr_name != "name":
-                            setattr(response, attr_name, child.attrs.get(attr_name))
+                            setattr(
+                                response,
+                                attr_name,
+                                child.attrs.get(attr_name))
 
                 setattr(response, name, child.final)
 
-        elif name in ('lst','doc'):
+        elif name in ('lst', 'doc'):
             # Represent these with a dict
             node.final = dict(
-                    [(cnode.attrs['name'], cnode.final)
-                        for cnode in node.children])
+                [(cnode.attrs['name'], cnode.final)
+                 for cnode in node.children])
 
         elif name in ('arr',):
             node.final = [cnode.final for cnode in node.children]
@@ -1047,10 +1060,9 @@ class ResponseContentHandler(ContentHandler):
         elif name == 'result':
             node.final = Results([cnode.final for cnode in node.children])
 
-
         elif name in ('responseHeader',):
             node.final = dict([(cnode.name, cnode.final)
-                        for cnode in node.children])
+                               for cnode in node.children])
         else:
             raise SolrException("Unknown tag: %s" % name)
 
@@ -1060,6 +1072,7 @@ class ResponseContentHandler(ContentHandler):
 
 
 class Results(list):
+
     """
     Convenience class containing <result> items
     """
@@ -1067,9 +1080,11 @@ class Results(list):
 
 
 class Node(object):
+
     """
     A temporary object used in XML processing. Not seen by end user.
     """
+
     def __init__(self, name, attrs):
         """
         Final will eventually be the "final" representation of
@@ -1086,7 +1101,7 @@ class Node(object):
             self.name,
             "".join(self.chars).strip(),
             ' '.join(['%s="%s"' % (attr, val)
-                            for attr, val in self.attrs.items()]))
+                      for attr, val in self.attrs.items()]))
 
 
 # ===================================================================
@@ -1108,9 +1123,11 @@ def check_response_status(response):
 # -------------------------------------------------------------------
 # A UTC class, for parsing Solr's returned dates.
 class UTC(datetime.tzinfo):
+
     """
     UTC timezone.
     """
+
     def utcoffset(self, dt):
         return datetime.timedelta(0)
 
@@ -1123,6 +1140,7 @@ class UTC(datetime.tzinfo):
 
 utc = UTC()
 
+
 def utc_to_string(value):
     """
     Convert datetimes to the subset of ISO 8601 that Solr expects.
@@ -1132,6 +1150,7 @@ def utc_to_string(value):
         value = value.split('+')[0]
     value += 'Z'
     return value
+
 
 def utc_from_string(value):
     """
@@ -1150,9 +1169,10 @@ def utc_from_string(value):
         microseconds = int(float(value[17:-1]) * 1000000.0)
         second, microsecond = divmod(microseconds, 1000000)
         return datetime.datetime(year, month, day, hour,
-            minute, second, microsecond, utc)
+                                 minute, second, microsecond, utc)
     except ValueError:
-        raise ValueError ("'%s' is not a valid ISO 8601 Solr date" % value)
+        raise ValueError("'%s' is not a valid ISO 8601 Solr date" % value)
+
 
 def qs_from_items(query):
     # This deals with lists of values since multiple filter queries can

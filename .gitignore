@@ -8,6 +8,8 @@ solr/**
 
 **/*.pyc
 
+disambiguation/solr.pyc
+
 data/rawdata/**
 
 solrhome/dbpedia/data/**
